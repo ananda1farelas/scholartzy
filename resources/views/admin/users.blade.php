@@ -5,6 +5,15 @@
 @section('content')
 <div class="space-y-6" x-data="{ showModal: false, editMode: false, editUser: null }">
     <div class="flex items-center justify-between">
+        @if ($errors->any())
+            <div class="p-4 mb-4 bg-red-500/10 border border-red-500/50 rounded-lg">
+                <ul class="list-disc list-inside text-sm text-red-400">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <h2 class="text-2xl font-bold">Kelola Pengguna</h2>
         <button @click="showModal = true; editMode = false; editUser = null;" 
                 class="px-4 py-2.5 bg-red-600 hover:bg-red-700 rounded-lg text-sm font-medium transition flex items-center gap-2">
