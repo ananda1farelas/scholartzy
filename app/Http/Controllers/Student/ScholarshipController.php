@@ -143,11 +143,16 @@ class ScholarshipController extends Controller
     {
         $student = Auth::user()->student;
         $applications = $student?->scholarshipApplications()
-            ->with(['documents', 'assessment.result'])
+            ->with([
+                'documents', 
+                'assessment.result',           // Hasil assessment
+                'assessment.staff',              // Siapa staff yang assess
+                'verifier',                       // Siapa yang verify
+                'student.semesterGpas'            // IPK per semester
+            ])
             ->latest()
             ->get() ?? collect();
 
-        // Ambil IPK per semester untuk ditampilkan
         $semesterGpas = $student?->semesterGpas()->orderBy('semester_number')->get() ?? collect();
 
         return view('student.status', compact('applications', 'semesterGpas'));
