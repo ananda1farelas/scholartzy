@@ -112,30 +112,6 @@
                         <p class="text-sm font-medium">{{ $application->assessment->result->generated_at->format('d F Y') }}</p>
                     </div>
                 </div>
-                <!-- IPK Per Semester -->
-                @if($semesterGpas->isNotEmpty())
-                <div class="px-6 py-4 bg-slate-950/30 border-t border-slate-800">
-                    <h4 class="text-sm font-semibold mb-3 text-blue-400">
-                        <i class="fas fa-graduation-cap mr-2"></i>IPK per Semester
-                    </h4>
-                    <div class="flex flex-wrap gap-2">
-                        @foreach($semesterGpas as $sg)
-                        <div class="px-3 py-2 bg-slate-800/50 rounded-lg text-center min-w-[80px]">
-                            <p class="text-[10px] text-gray-500 uppercase">Semester {{ $sg->semester_number }}</p>
-                            <p class="text-lg font-bold {{ $sg->gpa >= 3.5 ? 'text-green-400' : ($sg->gpa >= 3.0 ? 'text-blue-400' : ($sg->gpa >= 2.5 ? 'text-yellow-400' : 'text-red-400')) }}">
-                                {{ number_format($sg->gpa, 2) }}
-                            </p>
-                        </div>
-                        @endforeach
-                    </div>
-                    <div class="mt-3 pt-3 border-t border-slate-800/50 flex items-center justify-between">
-                        <span class="text-xs text-gray-500">IPK Kumulatif</span>
-                        <span class="text-lg font-bold text-white">
-                            {{ number_format($semesterGpas->avg('gpa'), 2) }}
-                        </span>
-                    </div>
-                </div>
-                @endif
 
                 <!-- Detail Assessment -->
                 <div class="mt-4 grid grid-cols-2 md:grid-cols-5 gap-3">

@@ -146,37 +146,101 @@
                 </div>
             </div>
 
-            <!-- Wali (Opsional) -->
-            <div>
-                <h4 class="text-md font-semibold text-yellow-400 mb-3"><i class="fas fa-user-shield mr-2"></i>Data Wali (Opsional)</h4>
-                <div class="grid md:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-gray-400 text-sm mb-1">Nama Wali</label>
-                        <input type="text" name="guardian_name" value="{{ old('guardian_name', $parentGuardian?->guardian_name) }}" 
-                            class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white">
+            <!-- FORM ORANG TUA - GUARDIAN OPSIONAL -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+                <h3 class="text-lg font-semibold mb-4 flex items-center gap-2">
+                    <i class="fas fa-user-shield text-purple-400"></i> Data Wali (Opsional)
+                </h3>
+                <p class="text-gray-500 text-sm mb-4">Isi jika mahasiswa tinggal bersama wali/orang tua asuh</p>
+
+                <!-- Toggle: Punya Wali? -->
+                <div class="mb-4">
+                    <label class="flex items-center gap-3 cursor-pointer">
+                        <input type="checkbox" 
+                            id="has_guardian" 
+                            name="has_guardian" 
+                            value="1"
+                            {{ old('has_guardian', $parentGuardian?->guardian_name ? 'checked' : '') }}
+                            class="w-5 h-5 rounded border-slate-600 bg-slate-800 text-blue-600 focus:ring-blue-500"
+                            onchange="toggleGuardianForm()">
+                        <span class="text-gray-300">Mahasiswa tinggal bersama wali/orang tua asuh</span>
+                    </label>
+                </div>
+
+                <!-- Form Wali (Hidden by default) -->
+                <div id="guardian_form" class="space-y-4 {{ old('has_guardian', $parentGuardian?->guardian_name ? 'block' : 'hidden') }}">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-400 text-sm mb-2">Nama Wali</label>
+                            <input type="text" 
+                                name="guardian_name" 
+                                value="{{ old('guardian_name', $parentGuardian?->guardian_name ?? '') }}"
+                                class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                                placeholder="Nama lengkap wali">
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm mb-2">Pekerjaan Wali</label>
+                            <input type="text" 
+                                name="guardian_occupation" 
+                                value="{{ old('guardian_occupation', $parentGuardian?->guardian_occupation ?? '') }}"
+                                class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                                placeholder="Pekerjaan wali">
+                        </div>
                     </div>
-                    <div>
-                        <label class="block text-gray-400 text-sm mb-1">Pekerjaan</label>
-                        <input type="text" name="guardian_occupation" value="{{ old('guardian_occupation', $parentGuardian?->guardian_occupation) }}" 
-                            class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white">
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-gray-400 text-sm mb-2">Penghasilan Wali/Bulan</label>
+                            <div class="relative">
+                                <span class="absolute left-3 top-2.5 text-gray-500">Rp</span>
+                                <input type="number" 
+                                    name="guardian_income" 
+                                    value="{{ old('guardian_income', $parentGuardian?->guardian_income ?? '') }}"
+                                    class="w-full pl-10 pr-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                                    placeholder="0">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-gray-400 text-sm mb-2">No. Telepon Wali</label>
+                            <input type="text" 
+                                name="guardian_phone_number" 
+                                value="{{ old('guardian_phone_number', $parentGuardian?->guardian_phone_number ?? '') }}"
+                                class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                                placeholder="08xxxxxxxxxx">
+                        </div>
                     </div>
+
                     <div>
-                        <label class="block text-gray-400 text-sm mb-1">Penghasilan / Bulan</label>
-                        <input type="number" name="guardian_income" value="{{ old('guardian_income', $parentGuardian?->guardian_income) }}" 
-                            class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white" placeholder="Rp">
-                    </div>
-                    <div>
-                        <label class="block text-gray-400 text-sm mb-1">No. Telepon</label>
-                        <input type="text" name="guardian_phone_number" value="{{ old('guardian_phone_number', $parentGuardian?->guardian_phone_number) }}" 
-                            class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="block text-gray-400 text-sm mb-1">Alamat</label>
-                        <textarea name="guardian_address" rows="2" 
-                            class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-500 text-white">{{ old('guardian_address', $parentGuardian?->guardian_address) }}</textarea>
+                        <label class="block text-gray-400 text-sm mb-2">Alamat Wali</label>
+                        <textarea name="guardian_address" 
+                                rows="2"
+                                class="w-full px-4 py-2.5 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white"
+                                placeholder="Alamat lengkap wali">{{ old('guardian_address', $parentGuardian?->guardian_address ?? '') }}</textarea>
                     </div>
                 </div>
             </div>
+
+            @push('scripts')
+            <script>
+            function toggleGuardianForm() {
+                const checkbox = document.getElementById('has_guardian');
+                const form = document.getElementById('guardian_form');
+                
+                if (checkbox.checked) {
+                    form.classList.remove('hidden');
+                    form.classList.add('block');
+                } else {
+                    form.classList.add('hidden');
+                    form.classList.remove('block');
+                    
+                    // Clear inputs
+                    form.querySelectorAll('input, textarea').forEach(input => {
+                        input.value = '';
+                    });
+                }
+            }
+            </script>
+            @endpush
 
             <!-- Jumlah Tanggungan -->
             <div class="border-t border-slate-800 pt-4">

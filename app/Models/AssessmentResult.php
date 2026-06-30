@@ -26,6 +26,8 @@ class AssessmentResult extends Model
         return [
             'eligibility_score' => 'decimal:2',
             'generated_at' => 'datetime',
+            'created_at' => 'datetime',  // Tambahin ini
+            'updated_at' => 'datetime',  // Tambahin ini
         ];
     }
 

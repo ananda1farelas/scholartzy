@@ -51,24 +51,40 @@ class ProfileController extends Controller
             return back()->with('error', 'Lengkapi profil mahasiswa terlebih dahulu!');
         }
 
-        $validated = $request->validate([
-            'father_name' => ['nullable', 'string', 'max:100'],
+        // Validasi: Ayah & Ibu wajib, Guardian opsional
+        $rules = [
+            'father_name' => ['required', 'string', 'max:100'],
             'father_occupation' => ['nullable', 'string', 'max:100'],
             'father_income' => ['nullable', 'numeric', 'min:0'],
             'father_phone_number' => ['nullable', 'string', 'max:15'],
             'father_address' => ['nullable', 'string'],
-            'mother_name' => ['nullable', 'string', 'max:100'],
+            
+            'mother_name' => ['required', 'string', 'max:100'],
             'mother_occupation' => ['nullable', 'string', 'max:100'],
             'mother_income' => ['nullable', 'numeric', 'min:0'],
             'mother_phone_number' => ['nullable', 'string', 'max:15'],
             'mother_address' => ['nullable', 'string'],
+            
+            // Guardian: semua nullable
             'guardian_name' => ['nullable', 'string', 'max:100'],
             'guardian_occupation' => ['nullable', 'string', 'max:100'],
             'guardian_income' => ['nullable', 'numeric', 'min:0'],
             'guardian_phone_number' => ['nullable', 'string', 'max:15'],
             'guardian_address' => ['nullable', 'string'],
+            
             'dependents_count' => ['required', 'integer', 'min:0'],
-        ]);
+        ];
+
+        $validated = $request->validate($rules);
+
+        // Hapus guardian fields kalau tidak dicentang
+        if (!$request->has('has_guardian') || empty($validated['guardian_name'])) {
+            $validated['guardian_name'] = null;
+            $validated['guardian_occupation'] = null;
+            $validated['guardian_income'] = null;
+            $validated['guardian_phone_number'] = null;
+            $validated['guardian_address'] = null;
+        }
 
         if ($student->parentGuardian) {
             $student->parentGuardian->update($validated);

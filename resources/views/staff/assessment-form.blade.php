@@ -60,7 +60,8 @@
                 <span class="text-xs text-gray-500">0.00 - 4.00</span>
             </label>
             <input type="number" name="ipk_score" step="0.01" min="0" max="4" 
-                value="{{ old('ipk_score', $autoIpk) }}" 
+                value="{{ old('ipk_score', $autoIpk) }}"
+                readonly="{{ $semesterGpas->isNotEmpty() ? 'readonly' : '' }}"
                 class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" 
                 placeholder="Contoh: 3.75" required>
             <p class="text-xs text-gray-500 mt-1">
@@ -79,7 +80,8 @@
                 <span class="text-xs text-gray-500">Per bulan</span>
             </label>
             <input type="number" name="total_family_income" min="0" 
-                value="{{ old('total_family_income', ($application->student->parentGuardian->father_income ?? 0) + ($application->student->parentGuardian->mother_income ?? 0) + ($application->student->parentGuardian->guardian_income ?? 0)) }}" 
+                value="{{ old('total_family_income', ($application->student->parentGuardian->father_income ?? 0) + ($application->student->parentGuardian->mother_income ?? 0) + ($application->student->parentGuardian->guardian_income ?? 0)) }}"
+                readonly="{{ $semesterGpas->isNotEmpty() ? 'readonly' : '' }}"
                 class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" 
                 placeholder="Contoh: 2500000" required>
             <p class="text-xs text-gray-500 mt-1">Edit jika ada perbedaan dengan data di sistem.</p>
@@ -93,6 +95,7 @@
             </label>
             <input type="number" name="dependents_count" min="0" 
                 value="{{ old('dependents_count', $application->student->parentGuardian->dependents_count ?? 0) }}" 
+                readonly="{{ $semesterGpas->isNotEmpty() ? 'readonly' : '' }}"
                 class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white" 
                 required>
         </div>

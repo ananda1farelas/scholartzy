@@ -14,33 +14,31 @@ class ScholarshipController extends Controller
 {
     public function apply()
     {
-        $student = Auth::user()->student;
+        // Load relasi parentGuardian!
+        $student = Auth::user()->load('student.parentGuardian')->student;
         
         if (!$student || !$student->parentGuardian) {
             return redirect()->route('student.profile')
-                ->with('error', 'Lengkapi profil dan data orang tua terlebih dahulu sebelum mengajukan beasiswa!');
+                ->with('error', 'Lengkapi profil dan data orang tua terlebih dahulu!');
         }
 
-        // Hitung berapa semester yang HARUS diisi
-        // Semester 4 = isi IPK semester 1,2,3 (semester yang sudah lewat)
         $currentSemester = $student->semester;
-        $requiredSemesters = $currentSemester - 1; // Semester yang sudah selesai
+        $requiredSemesters = $currentSemester - 1;
         
         if ($requiredSemesters < 1) {
             return redirect()->route('student.dashboard')
                 ->with('error', 'Anda belum memiliki riwayat semester untuk mengajukan beasiswa.');
         }
 
-        // Cek apakah sudah ada pengajuan aktif
         $existingApplication = $student->scholarshipApplications()
-            ->whereIn('application_status', ['pending', 'verified', 'assessed'])
+            ->whereIn('application_status', ['pending', 'verified'])
             ->latest()
             ->first();
 
-        // Ambil IPK yang sudah pernah diinput
         $existingGpas = $student->semesterGpas()->pluck('gpa', 'semester_number')->toArray();
 
         return view('student.apply', compact(
+            'student',           // <-- Pastikan $student dikirim ke view
             'existingApplication', 
             'requiredSemesters', 
             'currentSemester',
@@ -54,7 +52,7 @@ class ScholarshipController extends Controller
 
         // Cek apakah sudah ada pengajuan aktif
         $existing = $student->scholarshipApplications()
-            ->whereIn('application_status', ['pending', 'verified', 'assessed'])
+            ->whereIn('application_status', ['pending', 'verified',])
             ->exists();
 
         if ($existing) {
@@ -142,13 +140,16 @@ class ScholarshipController extends Controller
     public function status()
     {
         $student = Auth::user()->student;
+        
+        // Clear cache untuk relasi
+        $student?->loadMissing(['scholarshipApplications.assessment.result']);
+        
         $applications = $student?->scholarshipApplications()
             ->with([
                 'documents', 
-                'assessment.result',           // Hasil assessment
-                'assessment.staff',              // Siapa staff yang assess
-                'verifier',                       // Siapa yang verify
-                'student.semesterGpas'            // IPK per semester
+                'assessment.result',
+                'assessment.staff',
+                'verifier',
             ])
             ->latest()
             ->get() ?? collect();

@@ -26,11 +26,11 @@ class ParentGuardian extends Model
         'mother_income',
         'mother_phone_number',
         'mother_address',
-        'guardian_name',
-        'guardian_occupation',
-        'guardian_income',
-        'guardian_phone_number',
-        'guardian_address',
+        'guardian_name',          // OPSIONAL
+        'guardian_occupation',    // OPSIONAL
+        'guardian_income',        // OPSIONAL
+        'guardian_phone_number',  // OPSIONAL
+        'guardian_address',       // OPSIONAL
         'dependents_count',
     ];
 
@@ -46,5 +46,13 @@ class ParentGuardian extends Model
     public function student()
     {
         return $this->belongsTo(Student::class, 'student_id');
+    }
+
+    /**
+     * Cek apakah data wali diisi (opsional)
+     */
+    public function hasGuardian(): bool
+    {
+        return !empty($this->guardian_name);
     }
 }

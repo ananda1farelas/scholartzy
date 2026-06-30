@@ -23,28 +23,33 @@
 
     <!-- Quick Stats -->
     <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 lg:gap-4">
+        <!-- Card 1: Total Pengajuan -->
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 lg:p-6">
             <div class="flex items-center justify-between mb-3 lg:mb-4">
                 <div class="w-10 h-10 lg:w-12 lg:h-12 bg-blue-500/10 rounded-xl flex items-center justify-center">
                     <i class="fas fa-file-alt text-blue-400 text-lg lg:text-xl"></i>
                 </div>
-                <span class="text-2xl lg:text-3xl font-bold">{{ auth()->user()->student?->scholarshipApplications()->count() ?? 0 }}</span>
+                <span class="text-2xl lg:text-3xl font-bold">
+                    {{ auth()->user()->student?->scholarshipApplications()->count() ?? 0 }}
+                </span>
             </div>
             <div class="text-gray-500 text-xs lg:text-sm">Pengajuan Beasiswa</div>
         </div>
 
+        <!-- Card 2: Sedang Diproses (FIXED) -->
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 lg:p-6">
             <div class="flex items-center justify-between mb-3 lg:mb-4">
                 <div class="w-10 h-10 lg:w-12 lg:h-12 bg-yellow-500/10 rounded-xl flex items-center justify-center">
                     <i class="fas fa-clock text-yellow-400 text-lg lg:text-xl"></i>
                 </div>
                 <span class="text-2xl lg:text-3xl font-bold">
-                    {{ auth()->user()->student?->scholarshipApplications()->whereIn('application_status', ['pending', 'verified', 'assessed'])->count() ?? 0 }}
+                    {{ auth()->user()->student?->scholarshipApplications()->whereIn('application_status', ['pending', 'verified'])->count() ?? 0 }}
                 </span>
             </div>
             <div class="text-gray-500 text-xs lg:text-sm">Sedang Diproses</div>
         </div>
 
+        <!-- Card 3: Assessment Selesai -->
         <div class="col-span-2 lg:col-span-1 bg-slate-900 border border-slate-800 rounded-xl p-4 lg:p-6">
             <div class="flex items-center justify-between mb-3 lg:mb-4">
                 <div class="w-10 h-10 lg:w-12 lg:h-12 bg-green-500/10 rounded-xl flex items-center justify-center">
