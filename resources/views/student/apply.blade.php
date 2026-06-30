@@ -95,6 +95,7 @@
                             min="0" 
                             max="20" 
                             value="{{ old('dependents_count', $student->parentGuardian?->dependents_count ?? '') }}"
+                            readonly="{{ $student->parentGuardian?->dependents_count !== null ? 'readonly' : '' }}"
                             class="w-full px-4 py-3 bg-slate-800 border border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-white text-center text-lg font-bold"
                             placeholder="Contoh: 3"
                             required>
