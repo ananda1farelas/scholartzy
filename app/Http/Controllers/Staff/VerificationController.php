@@ -33,11 +33,12 @@ class VerificationController extends Controller
 
     public function verify(Request $request, $id)
     {
-        $application = ScholarshipApplication::findOrFail($id);
+        $application = ScholarshipApplication::with(['student.parentGuardian', 'documents', 'student.semesterGpas'])->findOrFail($id);
 
         $validated = $request->validate([
             'status' => ['required', 'in:verified,rejected'],
             'notes' => ['nullable', 'string', 'max:500'],
+            'house_condition_score' => ['nullable', 'in:0,100'], // Ambil nilai kelayakan rumah
         ]);
 
         $application->update([
@@ -46,9 +47,34 @@ class VerificationController extends Controller
             'notes' => $validated['notes'] ?? $application->notes,
         ]);
 
+        // JIKA DIVERIFIKASI, SISTEM MENGISI DATA ASSESSMENT
+        if ($validated['status'] === 'verified') {
+            
+            $pg = $application->student->parentGuardian;
+            $totalIncome = ($pg->father_income ?? 0) + ($pg->mother_income ?? 0) + ($pg->guardian_income ?? 0);
+            
+            $gpas = $application->student->semesterGpas;
+            $ipkScore = $gpas->isNotEmpty() ? round($gpas->avg('gpa'), 2) : 0;
+            
+            $achievementScore = $application->documents->where('document_type', 'achievement_certificate')->count();
+
+            \App\Models\Assessment::updateOrCreate(
+                ['application_id' => $id],
+                [
+                    'staff_id' => auth()->user()->user_id,
+                    'assessment_date' => now(),
+                    'ipk_score' => $ipkScore,
+                    'total_family_income' => $totalIncome,
+                    'dependents_count' => $pg->dependents_count ?? 0,
+                    'achievement_score' => $achievementScore,
+                    'house_condition_score' => $validated['house_condition_score'] ?? 0,
+                ]
+            );
+        }
+
         $message = $validated['status'] === 'verified' 
-            ? 'Pengajuan berhasil diverifikasi!' 
-            : 'Pengajuan ditolak.';
+            ? 'Dokumen Valid! Data siap. Silakan ke menu Assessment untuk menjalankan AI Mamdani.' 
+            : 'Pengajuan ditolak secara permanen.';
 
         return redirect()->route('staff.verification')->with('success', $message);
     }

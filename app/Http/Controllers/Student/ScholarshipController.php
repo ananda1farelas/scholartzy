@@ -50,87 +50,94 @@ class ScholarshipController extends Controller
     {
         $student = Auth::user()->student;
 
-        // Cek apakah sudah ada pengajuan aktif
         $existing = $student->scholarshipApplications()
-            ->whereIn('application_status', ['pending', 'verified',])
+            ->whereIn('application_status', ['pending', 'verified'])
             ->exists();
 
         if ($existing) {
             return back()->with('error', 'Anda masih memiliki pengajuan yang sedang diproses!');
         }
 
-        $currentSemester = $student->semester;
-        $requiredSemesters = $currentSemester - 1;
+        $requiredSemesters = $student->semester - 1;
 
-        // Build validation rules untuk IPK per semester
-        $gpaRules = [];
-        $gpaMessages = [];
-        for ($i = 1; $i <= $requiredSemesters; $i++) {
-            $gpaRules["gpa_semester_$i"] = ['required', 'numeric', 'min:0', 'max:4'];
-            $gpaMessages["gpa_semester_$i.required"] = "IPK Semester $i wajib diisi";
-            $gpaMessages["gpa_semester_$i.min"] = "IPK Semester $i minimal 0";
-            $gpaMessages["gpa_semester_$i.max"] = "IPK Semester $i maksimal 4";
-        }
-
-        $validated = $request->validate(array_merge([
+        // 1. Validasi Super Simpel (Tanpa validasi input tanggungan)
+        $rules = [
             'documents' => ['required', 'array'],
             'documents.transcript' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
             'documents.family_card' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
             'documents.income_proof' => ['required', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
-            'documents.house_photo' => ['required', 'file', 'mimes:jpg,jpeg,png', 'max:5120'],
-            'documents.achievement_certificate' => ['nullable', 'file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+            
+            'house_photos' => ['required', 'array', 'min:4', 'max:5'], 
+            'house_photos.*' => ['file', 'mimes:jpg,jpeg,png', 'max:5120'],
+            
+            'cert_files' => ['nullable', 'array', 'max:10'],
+            'cert_files.*' => ['file', 'mimes:pdf,jpg,jpeg,png', 'max:5120'],
+            
             'notes' => ['nullable', 'string', 'max:500'],
-        ], $gpaRules), $gpaMessages);
+        ];
 
-        // Simpan IPK per semester
+        for ($i = 1; $i <= $requiredSemesters; $i++) {
+            $rules["gpa_semester_$i"] = ['required', 'numeric', 'min:0', 'max:4'];
+        }
+
+        $validated = $request->validate($rules);
+
+        // KITA HAPUS LOGIKA UPDATE TANGGUNGAN DI SINI KARENA AMBIL DARI DATABASE
+
         $totalGpa = 0;
         for ($i = 1; $i <= $requiredSemesters; $i++) {
             $gpaValue = $request->input("gpa_semester_$i");
-            
             SemesterGpa::updateOrCreate(
-                [
-                    'student_id' => $student->student_id,
-                    'semester_number' => $i,
-                ],
-                [
-                    'gpa' => $gpaValue,
-                ]
+                ['student_id' => $student->student_id, 'semester_number' => $i],
+                ['gpa' => $gpaValue]
             );
-            
             $totalGpa += $gpaValue;
         }
 
-        // Hitung IPK Kumulatif (rata-rata)
         $ipkKumulatif = round($totalGpa / $requiredSemesters, 2);
 
-        // Buat pengajuan
         $application = ScholarshipApplication::create([
             'student_id' => $student->student_id,
             'application_date' => now(),
             'application_status' => 'pending',
-            'notes' => $validated['notes'] ?? null,
+            'notes' => strip_tags($validated['notes'] ?? null),
         ]);
 
-        // Simpan dokumen
-        $documentTypes = [
-            'transcript' => 'Transkrip Nilai',
-            'family_card' => 'Kartu Keluarga',
-            'income_proof' => 'Bukti Penghasilan',
-            'house_photo' => 'Foto Rumah',
-            'achievement_certificate' => 'Sertifikat Prestasi',
-        ];
+        // 2. Simpan Dokumen Utama
+        $mainDocs = ['transcript', 'family_card', 'income_proof'];
+        foreach ($mainDocs as $type) {
+            if (isset($validated['documents'][$type])) {
+                $path = $validated['documents'][$type]->store("applications/{$application->application_id}", 'public');
+                ApplicationDocument::create([
+                    'application_id' => $application->application_id,
+                    'document_type' => $type,
+                    'file_path' => $path,
+                ]);
+            }
+        }
 
-        foreach ($validated['documents'] as $type => $file) {
-            if (!$file) continue;
+        // 3. Simpan Foto Rumah (Dari Array Input)
+        if ($request->hasFile('house_photos')) {
+            foreach ($request->file('house_photos') as $file) {
+                $path = $file->store("applications/{$application->application_id}/house", 'public');
+                ApplicationDocument::create([
+                    'application_id' => $application->application_id,
+                    'document_type' => 'house_photo',
+                    'file_path' => $path,
+                ]);
+            }
+        }
 
-            $path = $file->store("applications/{$application->application_id}", 'public');
-
-            ApplicationDocument::create([
-                'application_id' => $application->application_id,
-                'document_type' => $type,
-                'file_path' => $path,
-                'uploaded_at' => now(),
-            ]);
+        // 4. Simpan Sertifikat (Dari Array Multiple Input)
+        if ($request->hasFile('cert_files')) {
+            foreach ($request->file('cert_files') as $file) {
+                $path = $file->store("applications/{$application->application_id}/certificates", 'public');
+                ApplicationDocument::create([
+                    'application_id' => $application->application_id,
+                    'document_type' => 'achievement_certificate',
+                    'file_path' => $path,
+                ]);
+            }
         }
 
         return redirect()->route('student.status')->with('success', 

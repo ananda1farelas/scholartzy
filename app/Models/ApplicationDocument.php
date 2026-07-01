@@ -10,6 +10,8 @@ class ApplicationDocument extends Model
 {
     use HasFactory, SoftDeletes;
 
+    const CREATED_AT = 'uploaded_at';
+
     protected $primaryKey = 'document_id';
 
     protected $table = 'application_documents';
