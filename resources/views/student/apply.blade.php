@@ -214,10 +214,27 @@
                         <p class="text-xs text-gray-400">Maksimal total keseluruhan file: <strong class="text-white">50 MB</strong></p>
                     </div>
                 </div>
-                <button type="submit" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2">
+                <button type="submit" id="submitBtn" disabled class="w-full sm:w-auto bg-gray-600 cursor-not-allowed text-white px-8 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2">
                     <i class="fas fa-paper-plane"></i> Kirim Pengajuan
                 </button>
             </div>
+
+            <script>
+                const agreeCheckbox = document.getElementById('agree');
+                const submitBtn = document.getElementById('submitBtn');
+
+                agreeCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('bg-gray-600', 'cursor-not-allowed');
+                        submitBtn.classList.add('bg-blue-600', 'hover:bg-blue-700', 'cursor-pointer');
+                    } else {
+                        submitBtn.disabled = true;
+                        submitBtn.classList.remove('bg-blue-600', 'hover:bg-blue-700', 'cursor-pointer');
+                        submitBtn.classList.add('bg-gray-600', 'cursor-not-allowed');
+                    }
+                });
+            </script>
         </form>
     @endif
 </div>
