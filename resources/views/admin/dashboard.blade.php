@@ -11,7 +11,7 @@
     </div>
 
     <!-- Stats Grid -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
             <div class="flex items-center justify-between mb-3">
                 <div class="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">
@@ -50,6 +50,16 @@
                 <span class="text-2xl font-bold">{{ $stats['totalAssessments'] }}</span>
             </div>
             <p class="text-gray-500 text-xs">Total Assessment</p>
+        </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-5">
+            <div class="flex items-center justify-between mb-3">
+                <div class="w-10 h-10 bg-red-500/10 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-times text-red-400"></i>
+                </div>
+                <span class="text-2xl font-bold">{{ $stats['totalRejections'] }}</span>
+            </div>
+            <p class="text-gray-500 text-xs">Total Penolakan</p>
         </div>
     </div>
 

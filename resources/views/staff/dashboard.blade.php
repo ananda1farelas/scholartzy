@@ -11,7 +11,7 @@
     </div>
 
     <!-- Stats -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
             <div class="flex items-center justify-between mb-4">
                 <div class="w-12 h-12 bg-yellow-500/10 rounded-xl flex items-center justify-center">

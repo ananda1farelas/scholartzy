@@ -22,6 +22,7 @@ class AdminController extends Controller
             'verifiedApplications' => ScholarshipApplication::where('application_status', 'verified')->count(),
             'assessedApplications' => ScholarshipApplication::where('application_status', 'assessed')->count(),
             'totalAssessments' => AssessmentResult::count(),
+            'totalRejections' => AssessmentResult::where('eligibility_status', 'not_recommended')->count(),
             'recommended' => AssessmentResult::where('eligibility_status', 'recommended')->count(),
             'notRecommended' => AssessmentResult::where('eligibility_status', 'not_recommended')->count(),
         ];

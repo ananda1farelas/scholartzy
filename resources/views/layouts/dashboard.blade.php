@@ -260,6 +260,21 @@
                     @endif
                 </a>
 
+                <a href="{{ route('admin.parents') }}" 
+                class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
+                {{ request()->routeIs('admin.parents') 
+                    ? 'bg-red-600/15 text-white' 
+                    : 'text-gray-400 hover:text-white hover:bg-white/5' }}">
+                    <span class="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors
+                        {{ request()->routeIs('admin.parents') ? 'bg-red-500/20 text-red-400' : 'bg-slate-800 text-gray-500 group-hover:bg-slate-700' }}">
+                        <i class="fas fa-users text-xs"></i>
+                    </span>
+                    <span class="truncate">Data Orang Tua / Wali</span>
+                    @if(request()->routeIs('admin.parents'))
+                        <span class="ml-auto w-1.5 h-1.5 rounded-full bg-red-400"></span>
+                    @endif
+                </a>
+
                 <a href="{{ route('admin.applications') }}" 
                    class="group flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200
                    {{ request()->routeIs('admin.applications') 
