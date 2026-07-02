@@ -56,8 +56,9 @@ Route::middleware(['auth:staff', 'role:staff'])->prefix('staff')->group(function
         $verifiedCount = \App\Models\ScholarshipApplication::where('application_status', 'verified')->count();
         $assessedCount = \App\Models\ScholarshipApplication::where('application_status', 'assessed')->count();
         $totalApplications = \App\Models\ScholarshipApplication::count();
-        
-        return view('staff.dashboard', compact('pendingCount', 'verifiedCount', 'assessedCount', 'totalApplications'));
+        $rejectedCount = \App\Models\ScholarshipApplication::where('application_status', 'rejected')->count();
+
+        return view('staff.dashboard', compact('pendingCount', 'verifiedCount', 'assessedCount', 'totalApplications', 'rejectedCount'));
     })->name('staff.dashboard');
 
     Route::get('/verification', [VerificationController::class, 'index'])->name('staff.verification');

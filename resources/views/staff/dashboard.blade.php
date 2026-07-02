@@ -51,6 +51,16 @@
             </div>
             <div class="text-gray-500 text-sm">Total Pengajuan</div>
         </div>
+
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-6">
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-red-500/10 rounded-xl flex items-center justify-center">
+                    <i class="fas fa-times text-red-400 text-xl"></i>
+                </div>
+                <span class="text-3xl font-bold">{{ $rejectedCount }}</span>
+            </div>
+            <div class="text-gray-500 text-sm">Total Penolakan</div>
+        </div>
     </div>
 
     <!-- Quick Actions -->
